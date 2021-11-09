@@ -1,0 +1,115 @@
+version: "3.3"
+
+services:
+  redisserver:
+    #image: hub.swarmlab.io:5480/playground-redisserver:latest
+    container_name: redisserver
+    depends_on:
+      - writetomongo
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-async-connect: "true"
+        tag: mongo.redis
+    image: redis:6.0.9-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      playground-net:
+  writetomongo:
+    image: writemongo:latest
+    container_name: fluentd
+    user: root
+    build: ./WriteToMongo/fluent
+    volumes:
+      - ./WriteToMongo/fluent:/fluentd/etc
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    networks:
+      playground-net:
+  readmongo:
+    container_name: readmongo_service
+    restart: always
+    depends_on:
+      - writetomongo
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-async-connect: "true"
+        tag: mongo.access
+    build: ./readmongo
+    image: readmongo:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./readmongo:/usr/src/app
+    links:
+      - mongo
+    networks:
+      playground-net:
+  # readmongo:
+  #   container_name: readmongo_service
+  #   restart: always
+  #   depends_on:
+  #     - writetomongo
+  #   logging:
+  #     driver: "fluentd"
+  #     options:
+  #       fluentd-async-connect: "true"
+  #       tag: mongo.access
+  #   build: ./readmongo
+  #   image: readmongo:latest
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./readmongo:/usr/src/app
+  #   links:
+  #     - mongo
+  #   networks:
+  #     playground-net:
+  dummy:
+    container_name: dummy_service
+    restart: always
+    depends_on:
+      - writetomongo
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-async-connect: "true"
+        tag: mongo.dummy
+    build: ./dummyservice
+    image: dummyservice:latest
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./dummyservice:/usr/src/app
+    links:
+      - mongo
+    networks:
+      playground-net:
+  # ---- fluentd service ----
+  mongo:
+    container_name: mongo
+    depends_on:
+      - writetomongo
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-async-connect: "true"
+        tag: mongo.mongo
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - "27017:27017"
+    networks:
+      playground-net:
+
+volumes:
+  fluent:
+  readmongo:
+  dummy:
+
+networks:
+  playground-net:

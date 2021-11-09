@@ -1,0 +1,29 @@
+{
+  "name": "swarmlab-app",
+  "version": "1.0.0",
+  "description": "swarmlab app on node",
+  "main": "app.js",
+  "scripts": {
+    "start": "node ./run/app.js"
+  },
+  "dependencies": {
+    "async": "^3.2.0",
+    "axios": "^0.20.0",
+    "bestikk-log": "^1.0.0-alpha.2",
+    "chai": "^4.2.0",
+    "cors": "^2.8.5",
+    "dirty-chai": "^2.0.1",
+    "express": "^4.17.1",
+    "express-validator": "^6.6.1",
+    "helmet": "^4.1.1",
+    "ioredis": "^4.24.2",
+    "luxon": "^1.25.0",
+    "mongodb": "^3.6.3",
+    "mongoose": "5.12.1",
+    "node-global-storage": "^1.2.3",
+    "socket.io": "^4.0.0",
+    "socket.io-redis": "^6.1.0",
+    "url-exist-sync": "^1.0.2"
+  },
+  "devDependencies": {}
+}
